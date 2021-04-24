@@ -30,6 +30,8 @@ static SDL_RWops *RWops;
 #ifdef ROM_BROWSER
 #ifdef VERSION_GCW0
 static std::string gamedir = ("/media/data/roms");
+#elif VERSION_RS90
+static std::string gamedir = ("/media/data/roms");
 #elif VERSION_RETROFW
 static std::string gamedir = (homedir + "/roms");
 #elif defined VERSION_BITTBOY || defined VERSION_POCKETGO
@@ -1145,6 +1147,7 @@ static void callback_scaler(menu_t *caller_menu) {
     menu_add_entry(menu, menu_entry);
     menu_entry->callback = callback_selectedscaler;
 
+#ifndef VERSION_RS90
     menu_entry = new_menu_entry(0);
     menu_entry_set_text(menu_entry, "1.5x Fast");
     menu_add_entry(menu, menu_entry);
@@ -1284,6 +1287,7 @@ static void callback_scaler(menu_t *caller_menu) {
     }
 #endif
 
+#endif
     menu->selected_entry = currentEntryInList(menu, selectedscaler, 0);
     
     playMenuSound_in();

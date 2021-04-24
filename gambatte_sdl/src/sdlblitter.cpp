@@ -133,6 +133,8 @@ void SdlBlitter::CheckIPU(){
 void SdlBlitter::SetVid(int w, int h, int bpp){	
 #ifdef VERSION_GCW0
 	screen = SDL_SetVideoMode(w, h, bpp, SDL_HWSURFACE | SDL_TRIPLEBUF);
+#elif VERSION_RS90
+	screen = SDL_SetVideoMode(w, h, bpp, SDL_HWSURFACE | SDL_TRIPLEBUF);
 #elif VERSION_RETROFW
 	screen = SDL_SetVideoMode(w, h, bpp, SDL_HWSURFACE | SDL_TRIPLEBUF);
 #elif defined VERSION_BITTBOY || defined VERSION_POCKETGO
@@ -196,6 +198,7 @@ void SdlBlitter::SetIPUSharpness(const char *svalue){
 
 void SdlBlitter::setBufferDimensions() {
 	SetIPUSharpness("1");
+#ifndef VERSION_RS90
 	if (selectedscaler == "No Scaling" ||
 		selectedscaler == "1.5x Fast" ||
 		selectedscaler == "1.5x Smooth" ||
@@ -271,12 +274,17 @@ void SdlBlitter::setBufferDimensions() {
 	{
 		SetVid(320, 240, 16);
 	}
+#else
+	SetIPUAspectRatio("1");
+	SetVid(240, 160, 16);
+#endif
 	menu_set_screen(screen);
 	init_ghostframes();
 }
 
 void SdlBlitter::setScreenRes() {
 	SetIPUSharpness("1");
+#ifndef VERSION_RS90
 	if (selectedscaler == "No Scaling" ||
 		selectedscaler == "1.5x Fast" ||
 		selectedscaler == "1.5x Smooth" ||
@@ -374,11 +382,20 @@ void SdlBlitter::setScreenRes() {
 			SetVid(320, 240, 16);
 		}
 	}
+#else
+	SetIPUAspectRatio("1");
+	SetVid(240, 160, 16);
+#endif
 }
 
 void SdlBlitter::force320x240() {
+#ifndef VERSION_RS90
 	printf("forcing 320x240...\n");
 	SetVid(320, 240, 16);
+#else
+	printf("forcing 240x160...\n");
+	SetVid(240, 160, 16);
+#endif
 }
 
 SdlBlitter::PixelBuffer SdlBlitter::inBuffer() const {
@@ -507,6 +524,7 @@ void anim_textoverlay(SDL_Surface *surface) {
 }
 
 void SdlBlitter::applyScalerToSurface(SDL_Surface *sourcesurface) {
+#ifndef VERSION_RS90
 	size_t offset;
 	if (selectedscaler == "No Scaling")
 	{
@@ -663,6 +681,14 @@ void SdlBlitter::applyScalerToSurface(SDL_Surface *sourcesurface) {
             d += screen->w;
         }
 	}
+#else
+	SDL_Rect dst;
+	dst.x = (screen->w - sourcesurface->w) / 2;
+	dst.y = (screen->h - sourcesurface->h) / 2;
+	dst.w = sourcesurface->w;
+	dst.h = sourcesurface->h;
+	SDL_BlitSurface(sourcesurface, NULL, screen, &dst);
+#endif
 }
 
 static int frames = 0;

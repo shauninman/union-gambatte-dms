@@ -56,10 +56,18 @@ Mix_Chunk *menusound_move = NULL;
 Mix_Chunk *menusound_ok = NULL;
 
 // Default config values
+#ifndef VERSION_RS90
 int showfps = 0, ghosting = 1, biosenabled = 0, colorfilter = 0, gameiscgb = 0, buttonlayout = 0, stereosound = 1, prefercgb = 0, ffwhotkey = 1;
+#else
+int showfps = 0, ghosting = 0, biosenabled = 0, colorfilter = 0, gameiscgb = 0, buttonlayout = 0, stereosound = 1, prefercgb = 0, ffwhotkey = 1;
+#endif
 uint32_t menupalblack = 0x000000, menupaldark = 0x505450, menupallight = 0xA8A8A8, menupalwhite = 0xF8FCF8;
 int filtervalue[12] = {135, 20, 0, 25, 0, 125, 20, 25, 0, 20, 105, 30};
+#ifndef VERSION_RS90
 std::string selectedscaler= "No Scaling", dmgbordername = "DEFAULT", gbcbordername = "DEFAULT", palname = "DEFAULT", filtername = "NONE", currgamename = "default";
+#else
+std::string selectedscaler= "No Scaling", dmgbordername = "NONE",    gbcbordername = "NONE",    palname = "DEFAULT", filtername = "NONE", currgamename = "default";
+#endif
 std::string homedir = getenv("HOME");
 std::string ipuscaling = "NONE";
 int numcodes_gg = NUM_GG_CODES, numcodes_gs = NUM_GS_CODES, selectedcode = 0, editmode = 0, blink = 0, footer_alt = 0;
@@ -262,6 +270,8 @@ void clearAllCheats(){ // NOTE: This does not turn off cheats from the game, it 
 
 void openMenuAudio(){
 #ifdef VERSION_GCW0
+	Mix_OpenAudio(44100, AUDIO_S16SYS, 2, 1792);
+#elif VERSION_RS90
 	Mix_OpenAudio(44100, AUDIO_S16SYS, 2, 1792);
 #elif VERSION_RETROFW
 	Mix_OpenAudio(44100, AUDIO_S16SYS, 2, 1024);
