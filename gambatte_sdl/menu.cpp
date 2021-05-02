@@ -96,8 +96,8 @@ void menu_set_screen(SDL_Surface *set_screen) {
 
 void show_fps(SDL_Surface *surface, int fps) {
     char buffer[8];
-    sprintf(buffer, "%d", fps);
     if (showfps) {
+        sprintf(buffer, "%d", fps);
         SFont_Write(surface, fpsfont, 0, 0, buffer);
     }
 }
