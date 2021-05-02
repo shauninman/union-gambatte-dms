@@ -275,7 +275,6 @@ void SdlBlitter::setBufferDimensions() {
 		SetVid(320, 240, 16);
 	}
 #else
-	SetIPUAspectRatio("1");
 	SetVid(240, 160, 16);
 #endif
 	menu_set_screen(screen);
@@ -383,7 +382,6 @@ void SdlBlitter::setScreenRes() {
 		}
 	}
 #else
-	SetIPUAspectRatio("1");
 	SetVid(240, 160, 16);
 #endif
 }

@@ -63,11 +63,7 @@ int showfps = 0, ghosting = 0, biosenabled = 0, colorfilter = 0, gameiscgb = 0, 
 #endif
 uint32_t menupalblack = 0x000000, menupaldark = 0x505450, menupallight = 0xA8A8A8, menupalwhite = 0xF8FCF8;
 int filtervalue[12] = {135, 20, 0, 25, 0, 125, 20, 25, 0, 20, 105, 30};
-#ifndef VERSION_RS90
 std::string selectedscaler= "No Scaling", dmgbordername = "DEFAULT", gbcbordername = "DEFAULT", palname = "DEFAULT", filtername = "NONE", currgamename = "default";
-#else
-std::string selectedscaler= "No Scaling", dmgbordername = "NONE",    gbcbordername = "NONE",    palname = "DEFAULT", filtername = "NONE", currgamename = "default";
-#endif
 std::string homedir = getenv("HOME");
 std::string ipuscaling = "NONE";
 int numcodes_gg = NUM_GG_CODES, numcodes_gs = NUM_GS_CODES, selectedcode = 0, editmode = 0, blink = 0, footer_alt = 0;
@@ -272,7 +268,7 @@ void openMenuAudio(){
 #ifdef VERSION_GCW0
 	Mix_OpenAudio(44100, AUDIO_S16SYS, 2, 1792);
 #elif VERSION_RS90
-	Mix_OpenAudio(44100, AUDIO_S16SYS, 2, 1792);
+	Mix_OpenAudio(44100, AUDIO_S16SYS, 2, 1024);
 #elif VERSION_RETROFW
 	Mix_OpenAudio(44100, AUDIO_S16SYS, 2, 1024);
 #elif defined VERSION_BITTBOY || defined VERSION_POCKETGO
@@ -1392,6 +1388,7 @@ void paint_titlebar(SDL_Surface *surface){
 }
 
 void createBorderSurface(){
+#ifndef VERSION_RS90
 	if (selectedscaler == "FullScreen Fast" ||
 		selectedscaler == "FullScreen Smooth" ||
 		selectedscaler == "FullScreen IPU" ||
@@ -1436,6 +1433,9 @@ void createBorderSurface(){
 	{
 		borderimg = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 240, 16, 0, 0, 0, 0);
 	}
+#else
+	borderimg = SDL_CreateRGBSurface(SDL_SWSURFACE, 240, 160, 16, 0, 0, 0, 0);
+#endif
 
 	if(gameiscgb == 0){
 		if(dmgbordername != "NONE") {
@@ -1538,6 +1538,8 @@ void paint_border(SDL_Surface *surface){
 	SDL_Rect rect, rectb;
 	uint32_t barcolor = SDL_MapRGB(surface->format, 0, 0, 0);
 	int bpp = surface->format->BytesPerPixel;
+
+#ifndef VERSION_RS90
 	if (selectedscaler == "No Scaling")
 	{
 		rect.x = 0;
@@ -1679,6 +1681,13 @@ void paint_border(SDL_Surface *surface){
     	rect.h = 240;
     	SDL_BlitSurface(borderimg, &rect, surface, NULL);
 	}
+#else
+	rect.x = 0;
+	rect.y = 0;
+	rect.w = 240;
+	rect.h = 160;
+	SDL_BlitSurface(borderimg, &rect, surface, NULL);
+#endif
 }
 
 uint32_t convert_hexcolor(SDL_Surface *surface, const uint32_t color){
