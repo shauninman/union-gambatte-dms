@@ -716,9 +716,9 @@ void SdlBlitter::draw() {
 	} else if((firstframe == 0) && (is_using_bios == 1)){ //if game is booting with bios, dont let the user reset until the bios animation has ended. Resetting while on boot screen causes unexpected behaviour.
 		can_reset = 0;
 	}
-	if((is_using_bios == 1) && (gameiscgb == 0) && (firstframe == 336)){ //on DMG games the boot animation ends around frame 336 (might need finetuning here)
+	if((firstframe == 336) && (is_using_bios == 1) && (gameiscgb == 0)){ //on DMG games the boot animation ends around frame 336 (might need finetuning here)
 		can_reset = 1;
-	} else if((is_using_bios == 1) && (gameiscgb == 1) && (firstframe == 180)){ //on GBC games the boot animation ends around frame 180 (might need finetunung here)
+	} else if((firstframe == 180) && (is_using_bios == 1) && (gameiscgb == 1)){ //on GBC games the boot animation ends around frame 180 (might need finetunung here)
 		can_reset = 1;
 	}
 
