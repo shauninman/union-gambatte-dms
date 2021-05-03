@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Gambatte-DMS
 Comment=GB/GBC emulator
-Exec=gambatte-dms.rs90 %f
+Exec=gambatte-dms.rs90 -y %f
 Terminal=false
 Type=Application
 StartupNotify=true

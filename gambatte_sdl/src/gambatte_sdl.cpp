@@ -121,7 +121,11 @@ class RateOption : public DescOption {
 public:
 	RateOption()
 	: DescOption("sample-rate", 'r', 1)
+#ifndef VERSION_RS90
 	, rate_(48000)
+#else
+	, rate_(22050)
+#endif
 	{
 	}
 
@@ -148,7 +152,11 @@ class LatencyOption : public DescOption {
 public:
 	LatencyOption()
 	: DescOption("latency", 'l', 1)
+#ifndef VERSION_RS90
 	, latency_(96)
+#else
+	, latency_(133)
+#endif
 	{
 	}
 
@@ -175,7 +183,11 @@ class PeriodsOption : public DescOption {
 public:
 	PeriodsOption()
 	: DescOption("periods", 'p', 1)
+#ifndef VERSION_RS90
 	, periods_(4)
+#else
+	, periods_(2)
+#endif
 	{
 	}
 
@@ -258,7 +270,11 @@ class ResamplerOption : public DescOption {
 public:
 	ResamplerOption()
 	: DescOption("resampler", 0, 1)
+#ifndef VERSION_RS90
 	, resamplerNo_(1)
+#else
+	, resamplerNo_(0)
+#endif
 	{
 	}
 
