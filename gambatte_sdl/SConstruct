@@ -24,6 +24,13 @@ elif target == 'retrofw':
     version_defines = ' -DVERSION_RETROFW'
     extra_cflags = ' -Ofast -fdata-sections -mno-fp-exceptions -mno-check-zero-division -mframe-header-opt -fno-common -mips32 -fno-PIC -mno-abicalls -flto -fwhole-program'
     print("Building Gambatte SDL with RetroFW toolchain...")
+elif target == 'miyoomini':
+    include_path = ' -I/usr/include'
+    bin_path = '/usr/bin/arm-linux-gnueabihf-'
+    sdl_path = '/usr/bin/'
+    version_defines = ' -DVERSION_MIYOOMINI'
+    extra_cflags = ' -marm -mtune=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard -march=armv7ve -Ofast -fdata-sections -fno-common -fPIC -flto -fwhole-program'
+    print("Building Gambatte SDL with Miyoo Mini toolchain...")
 else:
     include_path = ''
     bin_path = ''

@@ -32,6 +32,9 @@
 SDL_Surface *lastframe;
 SDL_Surface *currframe;
 SDL_Surface *borderimg;
+#if defined VERSION_MIYOOMINI
+SDL_Surface *video;
+#endif
 
 struct SdlBlitter::SurfaceDeleter {
 	//static void del(SDL_Surface *s) { SDL_FreeSurface(s); }
@@ -56,8 +59,11 @@ SdlBlitter::SdlBlitter(unsigned inwidth, unsigned inheight,
 }
 
 SdlBlitter::~SdlBlitter() {
-	if (surface != screen)
-		SDL_FreeSurface(surface);
+	if (surface != screen) SDL_FreeSurface(surface);
+#if defined VERSION_MIYOOMINI
+	if (video) SDL_FreeSurface(video);
+	SDL_FreeSurface(screen);
+#endif
 }
 
 void init_ghostframes() {
@@ -139,6 +145,10 @@ void SdlBlitter::SetVid(int w, int h, int bpp){
 	screen = SDL_SetVideoMode(w, h, bpp, SDL_HWSURFACE | SDL_TRIPLEBUF);
 #elif defined VERSION_BITTBOY || defined VERSION_POCKETGO
 	screen = SDL_SetVideoMode(w, h, bpp, SDL_SWSURFACE);
+#elif defined VERSION_MIYOOMINI
+	if (video) SDL_FreeSurface(screen);
+	video = SDL_SetVideoMode(w, h, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
+	screen = SDL_CreateRGBSurface(SDL_HWSURFACE, w, h, 16, 0xF800, 0x7E0, 0x1F, 0); // wait, doesn't the scaler convert to 32bpp? is this not giving us what we asked for?
 #else
 	screen = SDL_SetVideoMode(w, h, bpp, SDL_HWSURFACE | SDL_DOUBLEBUF);
 #endif
@@ -652,7 +662,30 @@ void SdlBlitter::applyScalerToSurface(SDL_Surface *sourcesurface) {
 			scale15x_dotmatrix3((uint32_t*)((uint8_t *)screen->pixels + offset), (uint32_t*)sourcesurface->pixels, menupalwhite);
 		}
 	}
-	
+
+	// UNION @2x, converts 16bpp src to 32bpp dst
+#if defined VERSION_MIYOOMINI
+	else if (selectedscaler == "2x")
+	{
+		offset = (2 * (640 - 320)) + ((480 - 288) / 2) * screen->pitch;
+		scale2x_8888((uint32_t*)((uint8_t *)screen->pixels + offset), (uint32_t*)sourcesurface->pixels);
+	}
+	else if (selectedscaler == "3x")
+	{
+		offset = (2 * (640 - 480)) + ((480 - 432) / 2) * screen->pitch;
+		scale3x_8888((uint32_t*)((uint8_t *)screen->pixels + offset), (uint32_t*)sourcesurface->pixels);
+	}
+	else if (selectedscaler == "3x DMG")
+	{
+		offset = (2 * (640 - 480)) + ((480 - 432) / 2) * screen->pitch;
+		scale3x_dmg_8888((uint32_t*)((uint8_t *)screen->pixels + offset), (uint32_t*)sourcesurface->pixels, gameiscgb?menupalblack:menupalwhite);
+	}
+	else if (selectedscaler == "3x LCD")
+	{
+		offset = (2 * (640 - 480)) + ((480 - 432) / 2) * screen->pitch;
+		scale3x_lcd_8888((uint32_t*)((uint8_t *)screen->pixels + offset), (uint32_t*)sourcesurface->pixels);
+	}
+#else
 	else if (selectedscaler == "2x")
 	{
 		offset = (2 * (640 - 320) / 2) + ((480 - 288) / 2) * screen->pitch;
@@ -673,6 +706,7 @@ void SdlBlitter::applyScalerToSurface(SDL_Surface *sourcesurface) {
 		offset = (2 * (640 - 480) / 2) + ((480 - 432) / 2) * screen->pitch;
 		scale3x_lcd((uint32_t*)((uint8_t *)screen->pixels + offset), (uint32_t*)sourcesurface->pixels);
 	}
+#endif
 	
 	else if (selectedscaler == "1.5x Scan-3x")
 	{
@@ -847,7 +881,12 @@ void SdlBlitter::present() {
 		SDL_LockYUVOverlay(overlay_.get());
 	} else {
 		//SDL_UpdateRect(screen_, 0, 0, screen_->w, screen_->h);
+#if defined VERSION_MIYOOMINI
+		SDL_BlitSurface(screen, NULL, video, NULL);
+		SDL_Flip(video);
+#else
 		SDL_Flip(screen);
+#endif
 	}
 }
 

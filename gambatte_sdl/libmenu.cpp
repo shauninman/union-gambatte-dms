@@ -275,6 +275,8 @@ void openMenuAudio(){
 	Mix_OpenAudio(44100, AUDIO_S16SYS, 2, 1024);
 #elif defined VERSION_BITTBOY || defined VERSION_POCKETGO
 	Mix_OpenAudio(44100, AUDIO_S16SYS, 2, 1024);
+#elif VERSION_MIYOOMINI
+	Mix_OpenAudio(48000, AUDIO_S16SYS, 2, 1792);
 #else
 	Mix_OpenAudio(44100, AUDIO_S16SYS, 2, 1792);
 #endif
@@ -1975,7 +1977,7 @@ static void redraw(menu_t *menu) {
 		}
 		display_menu(menuscreen, menu);
 		blitter_p->scaleMenu();
-		SDL_Flip(screen);
+		blitter_p->present();
 	}	
 }
 
@@ -2003,7 +2005,7 @@ static void redraw_blank(menu_t *menu) {
 			SDL_FillRect(menuscreen, &rect, convert_hexcolor(screen, 0xFFFFFF));
 		}
 		blitter_p->scaleMenu();
-		SDL_Flip(screen);
+		blitter_p->present();
 	}	
 }
 
@@ -2021,7 +2023,7 @@ static void redraw_cheat(menu_t *menu) {
 		}
 		display_menu_cheat(menuscreen, menu);
 		blitter_p->scaleMenu();
-		SDL_Flip(screen);
+		blitter_p->present();
 	}
 }
 
@@ -2099,7 +2101,8 @@ void loadPalette(std::string palettefile){
 			selectedscaler == "Aspect DMG-2x" ||
 			selectedscaler == "Aspect DMG-3x" ||
 			selectedscaler == "FullScreen DMG-2x"||
-			selectedscaler == "FullScreen DMG-3x") {
+			selectedscaler == "FullScreen DMG-3x"||
+			selectedscaler == "3x DMG") {
 			for (int i = 0; i < 3; ++i) {
 		        for (int k = 0; k < 4; ++k) {
 		            if(k == 0)
@@ -2154,7 +2157,8 @@ void loadPalette(std::string palettefile){
 						selectedscaler == "Aspect DMG-2x" ||
 						selectedscaler == "Aspect DMG-3x" ||
 						selectedscaler == "FullScreen DMG-2x"||
-						selectedscaler == "FullScreen DMG-3x") {
+						selectedscaler == "FullScreen DMG-3x"||
+						selectedscaler == "3x DMG") {
 						for (int i = 0; i < 3; ++i) {
 					        for (int k = 0; k < 4; ++k) {
 					            if(k == 0)

@@ -352,6 +352,18 @@ public:
 	InputOption()
 	: DescOption("input", 'i', 10)
 	{
+#if defined VERSION_MIYOOMINI
+		ids_[0].keydata = SDLK_RETURN; 	// START
+		ids_[1].keydata = SDLK_RCTRL; 	// SELECT
+		ids_[2].keydata = SDLK_SPACE;	// A
+		ids_[3].keydata = SDLK_LCTRL;	// B
+		ids_[4].keydata = SDLK_UP;		
+		ids_[5].keydata = SDLK_DOWN;
+		ids_[6].keydata = SDLK_LEFT;
+		ids_[7].keydata = SDLK_RIGHT;
+		ids_[8].keydata = SDLK_LSHIFT;	// X
+		ids_[9].keydata = SDLK_LALT;	// Y
+#else
 		ids_[0].keydata = SDLK_RETURN;
 		ids_[1].keydata = SDLK_ESCAPE;
 		ids_[2].keydata = SDLK_LCTRL;
@@ -362,6 +374,7 @@ public:
 		ids_[7].keydata = SDLK_RIGHT;
 		ids_[8].keydata = SDLK_SPACE;
 		ids_[9].keydata = SDLK_LSHIFT;
+#endif
 	}
 
 	virtual void exec(char const *const *argv, int index);
@@ -1125,8 +1138,13 @@ bool GambatteSdl::handleEvents(BlitterWrapper &blitter) {
 					switch (e.key.keysym.sym) {
 // 					case SDLK_RCTRL: // R button in bittboy / Reset button in PocketGo / Menu button in PlayGO
 // 					case SDLK_BACKSPACE: // R trigger
+#if defined VERSION_GCW0
 					case SDLK_HOME: // Power button in Opendingux devices
 					case SDLK_KP_DIVIDE: // L3 in OpenDingux
+#elif defined VERSION_MIYOOMINI
+					case SDLK_ESCAPE: // MENU on Miyoo Mini
+					case SDLK_UNKNOWN: // POWER on Miyoo Mini
+#endif
 // 					case SDLK_END: // Power/Suspend button in RetroFW devices
 						if((menuout == -1) && (menuin == -1)){
 							ffwdtoggle = 0;
@@ -1245,6 +1263,12 @@ int GambatteSdl::run(long const sampleRate, int const latency, int const periods
 
 	SDL_PauseAudio(0);
 
+	if (resume_slot!=-1) {
+		gambatte.selectState_NoOsd(resume_slot);
+		gambatte.loadState_NoOsd();
+		resume_slot = -1;
+	}
+	
 	for (;;) {
 
 		if (handleEvents(blitter))

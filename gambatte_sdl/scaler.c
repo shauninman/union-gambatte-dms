@@ -1190,6 +1190,186 @@ void fullscreen_2(uint32_t* dst, uint32_t* src)
     }
 }
 
+#define A32( ) (0xFF << 24)
+#define R32(c) (((((c >> 11) & 0x1F) * 527 + 23 ) >> 6) << 16)
+#define G32(c) (((((c >>  5) & 0x3F) * 259 + 33 ) >> 6) <<  8)
+#define B32(c) (((((c      ) & 0x1F) * 527 + 23 ) >> 6)      )
+
+void scale2x_8888(uint32_t* dst, uint32_t* src) {
+    uint16_t* Src16 = (uint16_t*) src;
+    uint32_t* Dst32 = (uint32_t*) dst;
+
+    // There are 160 pixels horizontally, and 144 vertically.
+    // Each pixel becomes 2x2 with an added grid pattern.
+
+    uint8_t BlockX, BlockY;
+    uint16_t* BlockSrc;
+    uint32_t* BlockDst;
+    for (BlockY = 0; BlockY < 144; BlockY++)
+    {
+        BlockSrc = Src16 + BlockY * 160 * 1;
+        BlockDst = Dst32 + BlockY * 640 * 2;
+        for (BlockX = 0; BlockX < 160; BlockX++)
+        {
+            // Before:          After:
+            // (a)              (a)(a)
+            //                  (a)(a)
+
+			uint16_t c = *(BlockSrc);
+			uint32_t c32 = A32() | R32(c) | G32(c) | B32(c);
+
+            // -- Row 1 --
+            *(BlockDst               ) = c32;
+            *(BlockDst            + 1) = c32;
+
+            // -- Row 2 --
+            *(BlockDst + 640 *  1    ) = c32;
+            *(BlockDst + 640 *  1 + 1) = c32;
+
+            BlockSrc += 1;
+            BlockDst += 2;
+        }
+    }
+}
+
+void scale3x_8888(uint32_t* dst, uint32_t* src) {
+    uint16_t* Src16 = (uint16_t*) src;
+    uint32_t* Dst32 = (uint32_t*) dst;
+	
+	uint8_t BlockX, BlockY;
+    uint16_t* BlockSrc;
+    uint32_t* BlockDst;
+    for (BlockY = 0; BlockY < 144; BlockY++)
+    {
+        BlockSrc = Src16 + BlockY * 160 * 1;
+        BlockDst = Dst32 + BlockY * 640 * 3;
+        for (BlockX = 0; BlockX < 160; BlockX++)
+        {
+            // Before:          After:
+            // (c)              (c)(c)(c)
+            //                  (c)(c)(c)
+            //                  (c)(c)(c)
+			
+			uint16_t c = *(BlockSrc);
+			uint32_t c32 = A32() | R32(c) | G32(c) | B32(c);
+			
+            // -- Row 1 --
+            *(BlockDst               ) = c32;
+            *(BlockDst            + 1) = c32;
+            *(BlockDst            + 2) = c32;
+
+            // -- Row 2 --
+            *(BlockDst + 640 *  1    ) = c32;
+            *(BlockDst + 640 *  1 + 1) = c32;
+            *(BlockDst + 640 *  1 + 2) = c32;
+
+            // -- Row 3 --
+            *(BlockDst + 640 *  2    ) = c32;
+            *(BlockDst + 640 *  2 + 1) = c32;
+            *(BlockDst + 640 *  2 + 2) = c32;
+
+            BlockSrc += 1;
+            BlockDst += 3;
+		}
+	}
+}
+
+void scale3x_dmg_8888(uint32_t* dst, uint32_t* src, const uint32_t gridcolor) {
+    uint16_t* Src16 = (uint16_t*) src;
+    uint32_t* Dst32 = (uint32_t*) dst;
+    uint16_t gcolor = hexcolor_to_rgb565(gridcolor);
+
+    // There are 160 pixels horizontally, and 144 vertically.
+    // Each pixel becomes 3x3 with an added grid pattern.
+
+    uint8_t BlockX, BlockY;
+    uint16_t* BlockSrc;
+    uint32_t* BlockDst;
+    for (BlockY = 0; BlockY < 144; BlockY++)
+    {
+        BlockSrc = Src16 + BlockY * 160 * 1;
+        BlockDst = Dst32 + BlockY * 640 * 3;
+        for (BlockX = 0; BlockX < 160; BlockX++)
+        {
+            // Before:          After:
+            // (a)              (2)(1)(1)
+            //                  (2)(1)(1)
+            //                  (3)(2)(2)
+
+            uint16_t  _1 = *(BlockSrc);
+            uint16_t  _2 = Weight3_2( _1, gcolor);
+            uint16_t  _3 = Weight2_3( _1, gcolor);
+			
+			uint32_t _1_32 = A32() | R32(_1) | G32(_1) | B32(_1);
+			uint32_t _2_32 = A32() | R32(_2) | G32(_2) | B32(_2);
+			uint32_t _3_32 = A32() | R32(_3) | G32(_3) | B32(_3);
+			
+            // -- Row 1 --
+            *(BlockDst               ) = _2_32;
+            *(BlockDst            + 1) = _1_32;
+            *(BlockDst            + 2) = _1_32;
+
+            // -- Row 2 --
+            *(BlockDst + 640 *  1    ) = _2_32;
+            *(BlockDst + 640 *  1 + 1) = _1_32;
+            *(BlockDst + 640 *  1 + 2) = _1_32;
+
+            // -- Row 3 --
+            *(BlockDst + 640 *  2    ) = _3_32;
+            *(BlockDst + 640 *  2 + 1) = _2_32;
+            *(BlockDst + 640 *  2 + 2) = _2_32;
+
+            BlockSrc += 1;
+            BlockDst += 3;
+        }
+    }
+}
+
+void scale3x_lcd_8888(uint32_t* dst, uint32_t* src) {
+    uint16_t* Src16 = (uint16_t*) src;
+    uint32_t* Dst32 = (uint32_t*) dst;
+	
+	uint8_t BlockX, BlockY;
+    uint16_t* BlockSrc;
+    uint32_t* BlockDst;
+	uint32_t k = 0xff000000;
+    for (BlockY = 0; BlockY < 144; BlockY++)
+    {
+        BlockSrc = Src16 + BlockY * 160 * 1;
+        BlockDst = Dst32 + BlockY * 640 * 3;
+        for (BlockX = 0; BlockX < 160; BlockX++)
+        {
+            // Before:          After:
+            // (c)              (k)(g)(k)
+            //                  (r)(g)(b)
+            //                  (r)(k)(b)
+			
+			uint16_t c = *(BlockSrc);
+			uint32_t r = A32() | R32(c);
+			uint32_t g = A32() | G32(c);
+			uint32_t b = A32() | B32(c);
+			
+            // -- Row 1 --
+            *(BlockDst               ) = k;
+            *(BlockDst            + 1) = g;
+            *(BlockDst            + 2) = k;
+
+            // -- Row 2 --
+            *(BlockDst + 640 *  1    ) = r;
+            *(BlockDst + 640 *  1 + 1) = g;
+            *(BlockDst + 640 *  1 + 2) = b;
+
+            // -- Row 3 --
+            *(BlockDst + 640 *  2    ) = r;
+            *(BlockDst + 640 *  2 + 1) = k;
+            *(BlockDst + 640 *  2 + 2) = b;
+
+            BlockSrc += 1;
+            BlockDst += 3;
+		}
+	}
+}
+
 void scale2x(uint32_t* dst, uint32_t* src)
 {
     uint16_t* Src16 = (uint16_t*) src;
