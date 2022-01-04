@@ -9,6 +9,12 @@
 extern "C" {
 #endif
 
+void scale15x_sharp(uint16_t *dst, uint16_t *src);
+
+void scale2x(uint32_t* dst, uint32_t* src);
+void scale3x(uint32_t* dst, uint32_t* src);
+void scale3x_lcd(uint32_t* dst, uint32_t* src);
+void scale3x_dmg(uint32_t* dst, uint32_t* src, const uint32_t gridcolor);
 
 void scale15x(uint32_t *to, uint32_t *from);
 void scale15x_fast(uint32_t* dst, uint32_t* src);

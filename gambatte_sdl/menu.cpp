@@ -7,6 +7,7 @@
 #include "src/blitterwrapper.h"
 #include "builddate.h"
 
+#include "menu.h"
 #include "libmenu.h"
 #include "sfont_gameboy.h"
 
@@ -707,32 +708,51 @@ static void callback_settings(menu_t *caller_menu) {
     menu_entry_set_text(menu_entry, "Show FPS");
     menu_add_entry(menu, menu_entry);
     menu_entry->callback = callback_showfps;
-
-    menu_entry = new_menu_entry(0);
-    menu_entry_set_text(menu_entry, "Scaler");
-    menu_add_entry(menu, menu_entry);
-    menu_entry->callback = callback_scaler;
+	
+	if (use_2x) {
+	    if (gameiscgb == 0) { // Display only the DMG relevant options.
+		    menu_entry = new_menu_entry(0);
+		    menu_entry_set_text(menu_entry, "DMG Scaler");
+		    menu_add_entry(menu, menu_entry);
+		    menu_entry->callback = callback_scaler;
+	    } else if (gameiscgb == 1) { // Display only the GBC relevant options.
+		    menu_entry = new_menu_entry(0);
+		    menu_entry_set_text(menu_entry, "GBC Scaler");
+		    menu_add_entry(menu, menu_entry);
+		    menu_entry->callback = callback_scaler;
+		}
+	}
+	else {
+	    menu_entry = new_menu_entry(0);
+	    menu_entry_set_text(menu_entry, "Scaler");
+	    menu_add_entry(menu, menu_entry);
+	    menu_entry->callback = callback_scaler;
+	}
 
     if (gameiscgb == 0) { // Display only the DMG relevant options.
-        menu_entry = new_menu_entry(0);
+	    menu_entry = new_menu_entry(0);
         menu_entry_set_text(menu_entry, "Mono Palette");
         menu_add_entry(menu, menu_entry);
         menu_entry->callback = callback_dmgpalette;
-
-        menu_entry = new_menu_entry(0);
-        menu_entry_set_text(menu_entry, "DMG Border");
-        menu_add_entry(menu, menu_entry);
-        menu_entry->callback = callback_dmgborderimage;
+		
+		if (!use_2x) {
+	        menu_entry = new_menu_entry(0);
+	        menu_entry_set_text(menu_entry, "DMG Border");
+	        menu_add_entry(menu, menu_entry);
+	        menu_entry->callback = callback_dmgborderimage;
+		}
     } else if (gameiscgb == 1) { // Display only the GBC relevant options.
-        menu_entry = new_menu_entry(0);
+	    menu_entry = new_menu_entry(0);
         menu_entry_set_text(menu_entry, "Color Filter");
         menu_add_entry(menu, menu_entry);
         menu_entry->callback = callback_colorfilter;
 
-        menu_entry = new_menu_entry(0);
-        menu_entry_set_text(menu_entry, "GBC Border");
-        menu_add_entry(menu, menu_entry);
-        menu_entry->callback = callback_gbcborderimage;
+		if (!use_2x) {
+	        menu_entry = new_menu_entry(0);
+	        menu_entry_set_text(menu_entry, "GBC Border");
+	        menu_add_entry(menu, menu_entry);
+	        menu_entry->callback = callback_gbcborderimage;
+		}
     }
 
     menu_entry = new_menu_entry(0);
@@ -1117,151 +1137,76 @@ static void callback_scaler(menu_t *caller_menu) {
     menu_set_title(menu, "Scaler");
     menu->back_callback = callback_back;
 
+#ifndef VERSION_RS90
+	
+	if (use_2x) {
+	    menu_entry = new_menu_entry(0);
+	    menu_entry_set_text(menu_entry, "2x");
+	    menu_add_entry(menu, menu_entry);
+	    menu_entry->callback = callback_selectedscaler;
+		
+	    menu_entry = new_menu_entry(0);
+	    menu_entry_set_text(menu_entry, "3x");
+	    menu_add_entry(menu, menu_entry);
+	    menu_entry->callback = callback_selectedscaler;
+		
+	    menu_entry = new_menu_entry(0);
+	    menu_entry_set_text(menu_entry, "3x DMG");
+	    menu_add_entry(menu, menu_entry);
+	    menu_entry->callback = callback_selectedscaler;
+		
+	    menu_entry = new_menu_entry(0);
+	    menu_entry_set_text(menu_entry, "3x LCD");
+	    menu_add_entry(menu, menu_entry);
+	    menu_entry->callback = callback_selectedscaler;
+	}
+	else {
+	    menu_entry = new_menu_entry(0);
+	    menu_entry_set_text(menu_entry, "1x");
+	    menu_add_entry(menu, menu_entry);
+	    menu_entry->callback = callback_selectedscaler;
+		
+	    menu_entry = new_menu_entry(0);
+	    menu_entry_set_text(menu_entry, "1.5x Sharp");
+	    menu_add_entry(menu, menu_entry);
+	    menu_entry->callback = callback_selectedscaler;
+		
+	    menu_entry = new_menu_entry(0);
+	    menu_entry_set_text(menu_entry, "1.5x Fast");
+	    menu_add_entry(menu, menu_entry);
+	    menu_entry->callback = callback_selectedscaler;
+
+	    menu_entry = new_menu_entry(0);
+	    menu_entry_set_text(menu_entry, "1.5x Smooth");
+	    menu_add_entry(menu, menu_entry);
+	    menu_entry->callback = callback_selectedscaler;
+
+	    menu_entry = new_menu_entry(0);
+	    menu_entry_set_text(menu_entry, "Aspect Fast");
+	    menu_add_entry(menu, menu_entry);
+	    menu_entry->callback = callback_selectedscaler;
+
+	    menu_entry = new_menu_entry(0);
+	    menu_entry_set_text(menu_entry, "Aspect Smooth");
+	    menu_add_entry(menu, menu_entry);
+	    menu_entry->callback = callback_selectedscaler;
+
+	    menu_entry = new_menu_entry(0);
+	    menu_entry_set_text(menu_entry, "FullScreen Fast");
+	    menu_add_entry(menu, menu_entry);
+	    menu_entry->callback = callback_selectedscaler;
+
+	    menu_entry = new_menu_entry(0);
+	    menu_entry_set_text(menu_entry, "FullScreen Smooth");
+	    menu_add_entry(menu, menu_entry);
+	    menu_entry->callback = callback_selectedscaler;
+	}
+
+#else
     menu_entry = new_menu_entry(0);
     menu_entry_set_text(menu_entry, "No Scaling");
     menu_add_entry(menu, menu_entry);
     menu_entry->callback = callback_selectedscaler;
-
-#ifndef VERSION_RS90
-    menu_entry = new_menu_entry(0);
-    menu_entry_set_text(menu_entry, "1.5x Fast");
-    menu_add_entry(menu, menu_entry);
-    menu_entry->callback = callback_selectedscaler;
-
-    menu_entry = new_menu_entry(0);
-    menu_entry_set_text(menu_entry, "1.5x Smooth");
-    menu_add_entry(menu, menu_entry);
-    menu_entry->callback = callback_selectedscaler;
-
-    if (ipuscaling != "NONE") {
-        menu_entry = new_menu_entry(0);
-        menu_entry_set_text(menu_entry, "1.5x IPU");
-        menu_add_entry(menu, menu_entry);
-        menu_entry->callback = callback_selectedscaler;
-
-        menu_entry = new_menu_entry(0);
-        menu_entry_set_text(menu_entry, "1.5x IPU-2x");
-        menu_add_entry(menu, menu_entry);
-        menu_entry->callback = callback_selectedscaler;
-    }
-
-#ifdef VERSION_GCW0
-    if (ipuscaling != "NONE") {
-        menu_entry = new_menu_entry(0);
-        menu_entry_set_text(menu_entry, "1.5x DMG-2x");
-        menu_add_entry(menu, menu_entry);
-        menu_entry->callback = callback_selectedscaler;
-
-        menu_entry = new_menu_entry(0);
-        menu_entry_set_text(menu_entry, "1.5x DMG-3x");
-        menu_add_entry(menu, menu_entry);
-        menu_entry->callback = callback_selectedscaler;
-
-        menu_entry = new_menu_entry(0);
-        menu_entry_set_text(menu_entry, "1.5x Scan-2x");
-        menu_add_entry(menu, menu_entry);
-        menu_entry->callback = callback_selectedscaler;
-
-        menu_entry = new_menu_entry(0);
-        menu_entry_set_text(menu_entry, "1.5x Scan-3x");
-        menu_add_entry(menu, menu_entry);
-        menu_entry->callback = callback_selectedscaler;
-    }
-#endif
-
-    menu_entry = new_menu_entry(0);
-    menu_entry_set_text(menu_entry, "Aspect 1.66x Fast");
-    menu_add_entry(menu, menu_entry);
-    menu_entry->callback = callback_selectedscaler;
-
-    menu_entry = new_menu_entry(0);
-    menu_entry_set_text(menu_entry, "Aspect 1.66x Smooth");
-    menu_add_entry(menu, menu_entry);
-    menu_entry->callback = callback_selectedscaler;
-
-    if (ipuscaling != "NONE") {
-        menu_entry = new_menu_entry(0);
-        menu_entry_set_text(menu_entry, "Aspect IPU");
-        menu_add_entry(menu, menu_entry);
-        menu_entry->callback = callback_selectedscaler;
-
-        menu_entry = new_menu_entry(0);
-        menu_entry_set_text(menu_entry, "Aspect IPU-2x");
-        menu_add_entry(menu, menu_entry);
-        menu_entry->callback = callback_selectedscaler;
-
-    }
-
-#ifdef VERSION_GCW0
-    if (ipuscaling != "NONE") {
-        menu_entry = new_menu_entry(0);
-        menu_entry_set_text(menu_entry, "Aspect DMG-2x");
-        menu_add_entry(menu, menu_entry);
-        menu_entry->callback = callback_selectedscaler;
-
-        menu_entry = new_menu_entry(0);
-        menu_entry_set_text(menu_entry, "Aspect DMG-3x");
-        menu_add_entry(menu, menu_entry);
-        menu_entry->callback = callback_selectedscaler;
-
-        menu_entry = new_menu_entry(0);
-        menu_entry_set_text(menu_entry, "Aspect Scan-2x");
-        menu_add_entry(menu, menu_entry);
-        menu_entry->callback = callback_selectedscaler;
-
-        menu_entry = new_menu_entry(0);
-        menu_entry_set_text(menu_entry, "Aspect Scan-3x");
-        menu_add_entry(menu, menu_entry);
-        menu_entry->callback = callback_selectedscaler;
-    }
-#endif
-
-    menu_entry = new_menu_entry(0);
-    menu_entry_set_text(menu_entry, "FullScreen Fast");
-    menu_add_entry(menu, menu_entry);
-    menu_entry->callback = callback_selectedscaler;
-
-    menu_entry = new_menu_entry(0);
-    menu_entry_set_text(menu_entry, "FullScreen Smooth");
-    menu_add_entry(menu, menu_entry);
-    menu_entry->callback = callback_selectedscaler;
-
-    if (ipuscaling != "NONE") {
-        menu_entry = new_menu_entry(0);
-        menu_entry_set_text(menu_entry, "FullScreen IPU");
-        menu_add_entry(menu, menu_entry);
-        menu_entry->callback = callback_selectedscaler;
-
-        menu_entry = new_menu_entry(0);
-        menu_entry_set_text(menu_entry, "FullScreen IPU-2x");
-        menu_add_entry(menu, menu_entry);
-        menu_entry->callback = callback_selectedscaler;
-    }
-
-#ifdef VERSION_GCW0
-    if (ipuscaling != "NONE") {
-        menu_entry = new_menu_entry(0);
-        menu_entry_set_text(menu_entry, "FullScreen DMG-2x");
-        menu_add_entry(menu, menu_entry);
-        menu_entry->callback = callback_selectedscaler;
-
-        menu_entry = new_menu_entry(0);
-        menu_entry_set_text(menu_entry, "FullScreen DMG-3x");
-        menu_add_entry(menu, menu_entry);
-        menu_entry->callback = callback_selectedscaler;
-
-        menu_entry = new_menu_entry(0);
-        menu_entry_set_text(menu_entry, "FullScreen Scan-2x");
-        menu_add_entry(menu, menu_entry);
-        menu_entry->callback = callback_selectedscaler;
-
-        menu_entry = new_menu_entry(0);
-        menu_entry_set_text(menu_entry, "FullScreen Scan-3x");
-        menu_add_entry(menu, menu_entry);
-        menu_entry->callback = callback_selectedscaler;
-    }
-#endif
-
 #endif
     menu->selected_entry = currentEntryInList(menu, selectedscaler, 0);
     
@@ -1275,9 +1220,21 @@ static void callback_selectedscaler(menu_t *caller_menu) {
     playMenuSound_ok();
     selectedscaler = std::string(caller_menu->entries[caller_menu->selected_entry]->text);
     if(gameiscgb == 0){
+		if (use_2x) {
+			dmgscaler = selectedscaler;
+		}
+		else {
+			anyscaler = selectedscaler;
+		}
         loadPalette(palname);
         load_border(dmgbordername);
     } else if(gameiscgb == 1){
+		if (use_2x) {
+			cgbscaler = selectedscaler;
+		}
+		else {
+			anyscaler = selectedscaler;
+		}
         load_border(gbcbordername);
     }
     blitter_p->setScreenRes(); /* switch to selected resolution */

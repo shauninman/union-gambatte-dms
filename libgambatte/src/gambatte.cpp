@@ -60,7 +60,11 @@ GB::~GB() {
 }
 
 std::string GB::getSaveStatePath(int statenum){
-	return statePath(p_->cpu.saveBasePath(), statenum);
+	return statePath(p_->cpu.stateBasePath(), statenum); // MINUI
+}
+
+std::string GB::getSaveStatePathTemplate(){
+	return statePathTemplate(p_->cpu.stateBasePath());
 }
 
 std::ptrdiff_t GB::runFor(gambatte::uint_least32_t *const videoBuf, std::ptrdiff_t const pitch,
@@ -131,6 +135,10 @@ void GB::setBootloaderGetter(bool (*getter)(void* userdata, bool isgbc, uint8_t*
 void GB::setSaveDir(std::string const &sdir) {
 	p_->cpu.setSaveDir(sdir);
 }
+ // MINUI
+void GB::setStateDir(std::string const &sdir) {
+	p_->cpu.setStateDir(sdir);
+}
 
 LoadRes GB::load(std::string const &romfile, unsigned const flags, int const preferCGB) {
 	if (p_->cpu.loaded())
@@ -197,7 +205,7 @@ bool GB::loadState(std::string const &filepath) {
 }
 
 bool GB::saveState(gambatte::uint_least32_t const *videoBuf, std::ptrdiff_t pitch) {
-	if (saveState(videoBuf, pitch, statePath(p_->cpu.saveBasePath(), p_->stateNo))) {
+	if (saveState(videoBuf, pitch, statePath(p_->cpu.stateBasePath(), p_->stateNo))) { // MINUI
 		p_->cpu.setOsdElement(newStateSavedOsdElement(p_->stateNo));
 		return true;
 	}
@@ -206,7 +214,7 @@ bool GB::saveState(gambatte::uint_least32_t const *videoBuf, std::ptrdiff_t pitc
 }
 
 bool GB::saveState_NoOsd(gambatte::uint_least32_t const *videoBuf, std::ptrdiff_t pitch) {
-	if (saveState(videoBuf, pitch, statePath(p_->cpu.saveBasePath(), p_->stateNo))) {
+	if (saveState(videoBuf, pitch, statePath(p_->cpu.stateBasePath(), p_->stateNo))) { // MINUI
 		return true;
 	}
 
@@ -214,7 +222,7 @@ bool GB::saveState_NoOsd(gambatte::uint_least32_t const *videoBuf, std::ptrdiff_
 }
 
 bool GB::loadState() {
-	if (loadState(statePath(p_->cpu.saveBasePath(), p_->stateNo))) {
+	if (loadState(statePath(p_->cpu.stateBasePath(), p_->stateNo))) { // MINUI
 		p_->cpu.setOsdElement(newStateLoadedOsdElement(p_->stateNo));
 		return true;
 	}
@@ -223,7 +231,7 @@ bool GB::loadState() {
 }
 
 bool GB::loadState_NoOsd() {
-	if (loadState(statePath(p_->cpu.saveBasePath(), p_->stateNo))) {
+	if (loadState(statePath(p_->cpu.stateBasePath(), p_->stateNo))) { // MINUI
 		return true;
 	}
 
@@ -247,7 +255,7 @@ void GB::selectState(int n) {
 	p_->stateNo = n < 0 ? n + 10 : n;
 
 	if (p_->cpu.loaded()) {
-		std::string const &path = statePath(p_->cpu.saveBasePath(), p_->stateNo);
+		std::string const &path = statePath(p_->cpu.stateBasePath(), p_->stateNo); // MINUI
 		p_->cpu.setOsdElement(newSaveStateOsdElement(path, p_->stateNo));
 	}
 }
@@ -257,7 +265,7 @@ void GB::selectState_NoOsd(int n) {
 	p_->stateNo = n < 0 ? n + 10 : n;
 
 	if (p_->cpu.loaded()) {
-		std::string const &path = statePath(p_->cpu.saveBasePath(), p_->stateNo);
+		std::string const &path = statePath(p_->cpu.stateBasePath(), p_->stateNo); // MINUI
 	}
 }
 

@@ -109,6 +109,7 @@ public:
 	  * the ROM Image file.
 	  */
 	void setSaveDir(std::string const &sdir);
+	void setStateDir(std::string const &sdir); // MINUI
 
 	/** Returns true if the currently loaded ROM image is treated as having CGB support. */
 	bool isCgb() const;
@@ -121,6 +122,7 @@ public:
 
 	/** Returns the savestate path for <statenum> slot */
 	std::string getSaveStatePath(int statenum);
+	std::string getSaveStatePathTemplate(); // MinUI
 
 	/**
 	  * Saves emulator state to the state slot selected with selectState().

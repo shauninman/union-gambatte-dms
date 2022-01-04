@@ -57,13 +57,13 @@ Mix_Chunk *menusound_ok = NULL;
 
 // Default config values
 #ifndef VERSION_RS90
-int showfps = 0, ghosting = 1, biosenabled = 0, colorfilter = 0, gameiscgb = 0, buttonlayout = 0, stereosound = 1, prefercgb = 1, ffwhotkey = 1, stateautoload = 0, stateautosave = 0;
+int showfps = 0, ghosting = 0, biosenabled = 0, colorfilter = 0, gameiscgb = 0, buttonlayout = 0, stereosound = 1, prefercgb = 1, ffwhotkey = 1, stateautoload = 0, stateautosave = 0;
 #else
 int showfps = 0, ghosting = 0, biosenabled = 0, colorfilter = 0, gameiscgb = 0, buttonlayout = 0, stereosound = 1, prefercgb = 1, ffwhotkey = 1, stateautoload = 0, stateautosave = 0;
 #endif
 uint32_t menupalblack = 0x000000, menupaldark = 0x505450, menupallight = 0xA8A8A8, menupalwhite = 0xF8FCF8;
 int filtervalue[12] = {135, 20, 0, 25, 0, 125, 20, 25, 0, 20, 105, 30};
-std::string selectedscaler= "No Scaling", dmgbordername = "DEFAULT", gbcbordername = "DEFAULT", palname = "DEFAULT", filtername = "NONE", currgamename = "default";
+std::string selectedscaler="1.5x Sharp", anyscaler="1.5x Sharp", dmgscaler="3x", cgbscaler="3x", dmgbordername = "NONE", gbcbordername = "NONE", palname = "NONE", filtername = "DEFAULT", currgamename = "default";
 std::string homedir = getenv("HOME");
 std::string ipuscaling = "NONE";
 int numcodes_gg = NUM_GG_CODES, numcodes_gs = NUM_GS_CODES, selectedcode = 0, editmode = 0, blink = 0, footer_alt = 0;
@@ -231,6 +231,8 @@ void apply_cfilter(SDL_Surface *surface) {
 }
 
 void printOverlay(const char *text){
+	return; // disable menu print overlay
+	
 	uint32_t hlcolor = SDL_MapRGB(textoverlay->format, 248, 252, 248);
 	SDL_FillRect(textoverlay, NULL, hlcolor);
 	SFont_WriteCenter(textoverlay, font, 0, text);
@@ -1442,6 +1444,8 @@ void paint_titlebar(SDL_Surface *surface){
 }
 
 void createBorderSurface(){
+	selectedscaler = use_2x ? (gameiscgb==0 ? dmgscaler : cgbscaler) : anyscaler; // MINUI
+
 #ifndef VERSION_RS90
 	if (selectedscaler == "FullScreen Fast" ||
 		selectedscaler == "FullScreen Smooth" ||
@@ -1460,15 +1464,16 @@ void createBorderSurface(){
 	{
 		borderimg = SDL_CreateRGBSurface(SDL_SWSURFACE, 214, 160, 16, 0, 0, 0, 0);
 	}
-	else if (selectedscaler == "1.5x Fast" ||
+	else if (selectedscaler == "1.5x Sharp" || 
+		selectedscaler == "1.5x Fast" ||
 		selectedscaler == "1.5x Smooth" ||
 		selectedscaler == "1.5x DMG-3x" ||
 		selectedscaler == "1.5x Scan-3x")
 	{
 		borderimg = SDL_CreateRGBSurface(SDL_SWSURFACE, 212, 160, 16, 0, 0, 0, 0);
 	}
-	else if (selectedscaler == "Aspect 1.66x Fast" ||
-		selectedscaler == "Aspect 1.66x Smooth" ||
+	else if (selectedscaler == "Aspect Fast" ||
+		selectedscaler == "Aspect Smooth" ||
 		selectedscaler == "Aspect IPU-2x" ||
 		selectedscaler == "Aspect DMG-2x" ||
 		selectedscaler == "Aspect DMG-3x" ||
@@ -1478,6 +1483,7 @@ void createBorderSurface(){
 		borderimg = SDL_CreateRGBSurface(SDL_SWSURFACE, 192, 144, 16, 0, 0, 0, 0);
 	}
 	else if (selectedscaler == "No Scaling" ||
+		selectedscaler == "1x" ||
 		selectedscaler == "1.5x IPU" ||
 		selectedscaler == "Aspect IPU")
 	{
@@ -1588,13 +1594,21 @@ void load_border(std::string borderfilename){ //load border from menu
 }
 
 void paint_border(SDL_Surface *surface){
+	if (use_2x) { // kill joy
+		clear_surface(surface, 0x000000);
+		return;
+	}
+	
 	size_t offset;
 	SDL_Rect rect, rectb;
 	uint32_t barcolor = SDL_MapRGB(surface->format, 0, 0, 0);
 	int bpp = surface->format->BytesPerPixel;
-
+	
+	selectedscaler = use_2x ? (gameiscgb==0 ? dmgscaler : cgbscaler) : anyscaler; // MINUI
+	
 #ifndef VERSION_RS90
-	if (selectedscaler == "No Scaling")
+	if (selectedscaler == "No Scaling" ||
+		selectedscaler == "1x")
 	{
 		rect.x = 0;
     	rect.y = 0;
@@ -1602,7 +1616,8 @@ void paint_border(SDL_Surface *surface){
     	rect.h = 240;
 		SDL_BlitSurface(borderimg, &rect, surface, NULL);
 	}
-	else if (selectedscaler == "1.5x Fast" ||
+	else if (selectedscaler == "1.5x Sharp" || 
+		selectedscaler == "1.5x Fast" ||
 		selectedscaler == "1.5x Smooth")
 	{
 		rect.x = 0;
@@ -1618,8 +1633,8 @@ void paint_border(SDL_Surface *surface){
 		offset = 1;
 		scaleborder15x((uint32_t*)((uint8_t *)surface->pixels + offset * bpp), (uint32_t*)borderimg->pixels);
 	}
-	else if (selectedscaler == "Aspect 1.66x Fast" ||
-		selectedscaler == "Aspect 1.66x Smooth")
+	else if (selectedscaler == "Aspect Fast" ||
+		selectedscaler == "Aspect Smooth")
 	{
 		scaleborder166x((uint32_t*)((uint8_t *)surface->pixels), (uint32_t*)borderimg->pixels);
 		rect.x = 0;
@@ -2058,6 +2073,8 @@ static Uint32 get_pixel(SDL_Surface *surface, int x, int y) {
 }
 
 void loadPalette(std::string palettefile){
+	selectedscaler = use_2x ? (gameiscgb==0 ? dmgscaler : cgbscaler) : anyscaler; // MINUI
+	
     if(palettefile == "NONE"){
     	Uint32 value;
 	    for (int i = 0; i < 3; ++i) {
@@ -2275,7 +2292,9 @@ void saveConfig(int pergame){
 	}
     if (fprintf(cfile,
 		"SHOWFPS %d\n"
-		"SELECTEDSCALER %s\n"
+		"ANYSCALER %s\n"
+		"DMGSCALER %s\n"
+		"CGBSCALER %s\n"
 		"PALNAME %s\n"
 		"FILTERNAME %s\n"
 		"DMGBORDERNAME %s\n"
@@ -2289,7 +2308,9 @@ void saveConfig(int pergame){
 		"FFWHOTKEY %d\n"
 		"STEREOSOUND %d\n",
 		showfps,
-		selectedscaler.c_str(),
+		anyscaler.c_str(),
+		dmgscaler.c_str(),
+		cgbscaler.c_str(),
 		palname.c_str(),
 		filtername.c_str(),
 		dmgbordername.c_str(),
@@ -2348,7 +2369,7 @@ void loadConfig(){
 		if (!strcmp(line, "SHOWFPS")) {
 			sscanf(arg, "%d", &value);
 			showfps = value;
-		} else if (!strcmp(line, "SELECTEDSCALER")) {
+		} else if (!strcmp(line, "ANYSCALER")) {
 			unsigned int len = strlen(arg);
 			if (len == 0 || len > sizeof(charvalue) - 1) {
 				continue;
@@ -2357,7 +2378,27 @@ void loadConfig(){
 				arg[len-1] = '\0';
 			}
 			strcpy(charvalue, arg);
-			selectedscaler = std::string(charvalue);
+			anyscaler = std::string(charvalue);
+		} else if (!strcmp(line, "DMGSCALER")) {
+			unsigned int len = strlen(arg);
+			if (len == 0 || len > sizeof(charvalue) - 1) {
+				continue;
+			}
+			if (arg[len-1] == '\n') {
+				arg[len-1] = '\0';
+			}
+			strcpy(charvalue, arg);
+			dmgscaler = std::string(charvalue);
+		} else if (!strcmp(line, "CGBSCALER")) {
+			unsigned int len = strlen(arg);
+			if (len == 0 || len > sizeof(charvalue) - 1) {
+				continue;
+			}
+			if (arg[len-1] == '\n') {
+				arg[len-1] = '\0';
+			}
+			strcpy(charvalue, arg);
+			cgbscaler = std::string(charvalue);
 		} else if (!strcmp(line, "PALNAME")) {
 			unsigned int len = strlen(arg);
 			if (len == 0 || len > sizeof(charvalue) - 1) {

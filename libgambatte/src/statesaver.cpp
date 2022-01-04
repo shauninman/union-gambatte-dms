@@ -24,6 +24,7 @@
 #include <functional>
 #include <vector>
 #include <cstring>
+#include <unistd.h> // MINUI
 
 namespace {
 
@@ -418,7 +419,8 @@ bool StateSaver::saveState(SaveState const &state,
 		file.write(it->label, it->labelsize);
 		(*it->save)(file, state);
 	}
-
+	sync(); // MINUI
+	
 	return !file.fail();
 }
 

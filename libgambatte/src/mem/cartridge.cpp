@@ -512,6 +512,20 @@ void Cartridge::setSaveDir(std::string const &dir) {
 		saveDir_ += '/';
 }
 
+ // MINUI
+std::string const Cartridge::stateBasePath() const {
+	return stateDir_.empty()
+	     ? defaultStateBasePath_
+	     : stateDir_ + stripDir(defaultStateBasePath_);
+}
+
+ // MINUI
+void Cartridge::setStateDir(std::string const &dir) {
+	stateDir_ = dir;
+	if (!stateDir_.empty() && stateDir_[stateDir_.length() - 1] != '/')
+		stateDir_ += '/';
+}
+
 static void enforce8bit(unsigned char *data, std::size_t size) {
 	if (static_cast<unsigned char>(0x100))
 		while (size--)
@@ -637,6 +651,7 @@ LoadRes Cartridge::loadROM(std::string const &romfile,
 	rombanks = std::max(pow2ceil(filesize / 0x4000), 2u);
 
 	defaultSaveBasePath_.clear();
+	defaultStateBasePath_.clear(); // MINUI
 	ggUndoList_.clear();
 	mbc_.reset();
 	memptrs_.reset(rombanks, rambanks, cgb ? 8 : 2);
@@ -653,6 +668,7 @@ LoadRes Cartridge::loadROM(std::string const &romfile,
 		return LOADRES_IO_ERROR;
 
 	defaultSaveBasePath_ = stripExtension(romfile);
+	defaultStateBasePath_ = stripExtension(romfile); // MINUI
 
 	switch (type) {
 	case type_plain: mbc_.reset(new Mbc0(memptrs_)); break;

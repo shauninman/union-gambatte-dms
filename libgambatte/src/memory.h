@@ -45,6 +45,7 @@ public:
 	void loadSavedata() { cart_.loadSavedata(); }
 	void saveSavedata() { cart_.saveSavedata(); }
 	std::string const saveBasePath() const { return cart_.saveBasePath(); }
+	std::string const stateBasePath() const { return cart_.stateBasePath(); } // MINUI
 	void *rombank0_ptr() const { return cart_.romdata(0); }
 
 	void setOsdElement(transfer_ptr<OsdElement> osdElement) {
@@ -95,6 +96,7 @@ public:
 	unsigned long resetCounters(unsigned long cycleCounter);
 	LoadRes loadROM(std::string const &romfile, bool forceDmg, bool multicartCompat, int preferCGB);
 	void setSaveDir(std::string const &dir) { cart_.setSaveDir(dir); }
+	void setStateDir(std::string const &dir) { cart_.setStateDir(dir); } // MINUI
 	void setInputGetter(InputGetter *getInput) { getInput_ = getInput; }
 	void setEndtime(unsigned long cc, unsigned long inc);
 	void setSoundBuffer(uint_least32_t *buf) { psg_.setBuffer(buf); }

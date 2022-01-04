@@ -8,6 +8,7 @@
 extern gambatte::GB *gambatte_p;
 extern BlitterWrapper *blitter_p;
 extern SDL_Surface *surface;
+extern bool use_2x;
 
 void menu_set_screen(SDL_Surface *set_screen);
 int init_fps_font();

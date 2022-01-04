@@ -64,7 +64,9 @@ public:
 	void loadSavedata();
 	void saveSavedata();
 	std::string const saveBasePath() const;
+	std::string const stateBasePath() const; // MINUI
 	void setSaveDir(std::string const &dir);
+	void setStateDir(std::string const &dir); // MINUI
 	LoadRes loadROM(std::string const &romfile, bool forceDmg, bool multicartCompat, int preferCGB);
 	char const * romTitle() const { return reinterpret_cast<char const *>(memptrs_.romdata() + 0x134); }
 	class PakInfo const pakInfo(bool multicartCompat) const;
@@ -81,7 +83,9 @@ private:
 	Rtc rtc_;
 	scoped_ptr<Mbc> mbc_;
 	std::string defaultSaveBasePath_;
+	std::string defaultStateBasePath_; // MINUI
 	std::string saveDir_;
+	std::string stateDir_; // MINUI
 	std::vector<AddrData> ggUndoList_;
 
 	void applyGameGenie(std::string const &code);

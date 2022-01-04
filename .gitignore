@@ -1,0 +1,7 @@
+build/*
+*.a
+*.o
+*/.sconf_temp/*
+gambatte-dms
+gambatte_sdl/builddate.h
+.sconsign.dblite

@@ -197,83 +197,96 @@ void SdlBlitter::SetIPUSharpness(const char *svalue){
 }
 
 void SdlBlitter::setBufferDimensions() {
-	SetIPUSharpness("1");
+	selectedscaler = use_2x ? (gameiscgb==0 ? dmgscaler : cgbscaler) : anyscaler; // MINUI
+
+	// SetIPUSharpness("1");
+	SetIPUSharpness("0");
+	
 #ifndef VERSION_RS90
-	if (selectedscaler == "No Scaling" ||
-		selectedscaler == "1.5x Fast" ||
-		selectedscaler == "1.5x Smooth" ||
-		selectedscaler == "Aspect 1.66x Fast" ||
-		selectedscaler == "Aspect 1.66x Smooth" ||
-		selectedscaler == "FullScreen Fast" ||
-		selectedscaler == "FullScreen Smooth")
-	{
-		SetVid(320, 240, 16);
-	}
-	else if (selectedscaler == "1.5x IPU")
-	{
-		SetIPUSharpness("2");
-		SetIPUAspectRatio("1");
-		SetVid(208, 160, 16);
-	}
-	else if (selectedscaler == "Aspect IPU")
-	{
-		SetIPUSharpness("2");
-		SetIPUAspectRatio("1");
-		SetVid(192, 144, 16);
-	}
-	else if (selectedscaler == "FullScreen IPU")
-	{
-		SetIPUSharpness("2");
-		SetIPUAspectRatio("0");
-		SetVid(160, 144, 16);
-	}
-	else if (selectedscaler == "1.5x IPU-2x" ||
-		selectedscaler == "1.5x DMG-2x" ||
-		selectedscaler == "1.5x Scan-2x")
-	{
-		SetIPUSharpness("2");
-		SetIPUAspectRatio("1");
-		SetVid(428, 320, 16);
-	}
-	else if (selectedscaler == "Aspect IPU-2x" ||
-		selectedscaler == "Aspect DMG-2x" ||
-		selectedscaler == "Aspect Scan-2x")
-	{
-		SetIPUSharpness("2");
-		SetIPUAspectRatio("1");
-		SetVid(384, 288, 16);
-	}
-	else if (selectedscaler == "FullScreen IPU-2x" ||
-		selectedscaler == "FullScreen DMG-2x" ||
-		selectedscaler == "FullScreen Scan-2x")
-	{
-		SetIPUSharpness("2");
-		SetIPUAspectRatio("0");
-		SetVid(320, 288, 16);
-	}
-	else if (selectedscaler == "1.5x DMG-3x" ||
-		selectedscaler == "1.5x Scan-3x")
-	{
+	
+	if (use_2x) {
 		SetVid(640, 480, 16);
 	}
-	else if (selectedscaler == "Aspect DMG-3x" ||
-		selectedscaler == "Aspect Scan-3x")
-	{
-		SetIPUSharpness("7");
-		SetIPUAspectRatio("1");
-		SetVid(576, 432, 16);
-	}
-	else if (selectedscaler == "FullScreen DMG-3x" ||
-		selectedscaler == "FullScreen Scan-3x")
-	{
-		SetIPUSharpness("7");
-		SetIPUAspectRatio("0");
-		SetVid(480, 432, 16);
-	}
-	else
-	{
+	else {
 		SetVid(320, 240, 16);
 	}
+	
+	// if (selectedscaler == "No Scaling" ||
+	// 	selectedscaler == "1.5x Sharp" ||
+	// 	selectedscaler == "1.5x Fast" ||
+	// 	selectedscaler == "1.5x Smooth" ||
+	// 	selectedscaler == "Aspect Fast" ||
+	// 	selectedscaler == "Aspect Smooth" ||
+	// 	selectedscaler == "FullScreen Fast" ||
+	// 	selectedscaler == "FullScreen Smooth")
+	// {
+	// 	SetVid(320, 240, 16);
+	// }
+	// else if (selectedscaler == "1.5x IPU")
+	// {
+	// 	SetIPUSharpness("2");
+	// 	SetIPUAspectRatio("1");
+	// 	SetVid(208, 160, 16);
+	// }
+	// else if (selectedscaler == "Aspect IPU")
+	// {
+	// 	SetIPUSharpness("2");
+	// 	SetIPUAspectRatio("1");
+	// 	SetVid(192, 144, 16);
+	// }
+	// else if (selectedscaler == "FullScreen IPU")
+	// {
+	// 	SetIPUSharpness("2");
+	// 	SetIPUAspectRatio("0");
+	// 	SetVid(160, 144, 16);
+	// }
+	// else if (selectedscaler == "1.5x IPU-2x" ||
+	// 	selectedscaler == "1.5x DMG-2x" ||
+	// 	selectedscaler == "1.5x Scan-2x")
+	// {
+	// 	SetIPUSharpness("2");
+	// 	SetIPUAspectRatio("1");
+	// 	SetVid(428, 320, 16);
+	// }
+	// else if (selectedscaler == "Aspect IPU-2x" ||
+	// 	selectedscaler == "Aspect DMG-2x" ||
+	// 	selectedscaler == "Aspect Scan-2x")
+	// {
+	// 	SetIPUSharpness("2");
+	// 	SetIPUAspectRatio("1");
+	// 	SetVid(384, 288, 16);
+	// }
+	// else if (selectedscaler == "FullScreen IPU-2x" ||
+	// 	selectedscaler == "FullScreen DMG-2x" ||
+	// 	selectedscaler == "FullScreen Scan-2x")
+	// {
+	// 	SetIPUSharpness("2");
+	// 	SetIPUAspectRatio("0");
+	// 	SetVid(320, 288, 16);
+	// }
+	// else if (selectedscaler == "1.5x DMG-3x" ||
+	// 	selectedscaler == "1.5x Scan-3x")
+	// {
+	// 	SetVid(640, 480, 16);
+	// }
+	// else if (selectedscaler == "Aspect DMG-3x" ||
+	// 	selectedscaler == "Aspect Scan-3x")
+	// {
+	// 	SetIPUSharpness("7");
+	// 	SetIPUAspectRatio("1");
+	// 	SetVid(576, 432, 16);
+	// }
+	// else if (selectedscaler == "FullScreen DMG-3x" ||
+	// 	selectedscaler == "FullScreen Scan-3x")
+	// {
+	// 	SetIPUSharpness("7");
+	// 	SetIPUAspectRatio("0");
+	// 	SetVid(480, 432, 16);
+	// }
+	// else
+	// {
+	// 	SetVid(320, 240, 16);
+	// }
 #else
 	SetVid(240, 160, 16);
 #endif
@@ -282,118 +295,135 @@ void SdlBlitter::setBufferDimensions() {
 }
 
 void SdlBlitter::setScreenRes() {
-	SetIPUSharpness("1");
+	selectedscaler = use_2x ? (gameiscgb==0 ? dmgscaler : cgbscaler) : anyscaler; // MINUI
+	
+	SetIPUSharpness("0");
 #ifndef VERSION_RS90
-	if (selectedscaler == "No Scaling" ||
-		selectedscaler == "1.5x Fast" ||
-		selectedscaler == "1.5x Smooth" ||
-		selectedscaler == "Aspect 1.66x Fast" ||
-		selectedscaler == "Aspect 1.66x Smooth" ||
-		selectedscaler == "FullScreen Fast" ||
-		selectedscaler == "FullScreen Smooth")
-	{
-		if(screen->w != 320 || screen->h != 240) {
-			SetVid(320, 240, 16);
-		}
-	}
-	else if (selectedscaler == "1.5x IPU")
-	{
-		SetIPUSharpness("2");
-		SetIPUAspectRatio("1");
-		if(screen->w != 208 || screen->h != 160) {
-			SetVid(208, 160, 16);
-		}
-	}
-	else if (selectedscaler == "Aspect IPU")
-	{
-		SetIPUSharpness("2");
-		SetIPUAspectRatio("1");
-		if(screen->w != 192 || screen->h != 144) {
-			SetVid(192, 144, 16);
-		}
-	}
-	else if (selectedscaler == "FullScreen IPU")
-	{
-		SetIPUSharpness("2");
-		SetIPUAspectRatio("0");
-		if(screen->w != 160 || screen->h != 144) {
-			SetVid(160, 144, 16);
-		}
-	}
-	else if (selectedscaler == "1.5x IPU-2x" ||
-		selectedscaler == "1.5x DMG-2x" ||
-		selectedscaler == "1.5x Scan-2x")
-	{
-		SetIPUSharpness("2");
-		SetIPUAspectRatio("1");
-		if(screen->w != 428 || screen->h != 320){
-			SetVid(428, 320, 16);
-		}
-	}
-	else if (selectedscaler == "Aspect IPU-2x" ||
-		selectedscaler == "Aspect DMG-2x" ||
-		selectedscaler == "Aspect Scan-2x")
-	{
-		SetIPUSharpness("2");
-		SetIPUAspectRatio("1");
-		if(screen->w != 384 || screen->h != 288){
-			SetVid(384, 288, 16);
-		}
-	}
-	else if (selectedscaler == "FullScreen IPU-2x" ||
-		selectedscaler == "FullScreen DMG-2x" ||
-		selectedscaler == "FullScreen Scan-2x")
-	{
-		SetIPUSharpness("2");
-		SetIPUAspectRatio("0");
-		if(screen->w != 320 || screen->h != 288) {
-			SetVid(320, 288, 16);
-		}
-	}
-	else if (selectedscaler == "1.5x DMG-3x" ||
-		selectedscaler == "1.5x Scan-3x")
-	{
+	
+	if (use_2x) {
 		if(screen->w != 640 || screen->h != 480){
 			SetVid(640, 480, 16);
 		}
 	}
-	else if (selectedscaler == "Aspect DMG-3x" ||
-		selectedscaler == "Aspect Scan-3x")
-	{
-		SetIPUSharpness("7");
-		SetIPUAspectRatio("1");
-		if(screen->w != 576 || screen->h != 432){
-			SetVid(576, 432, 16);
-		}
-	}
-	else if (selectedscaler == "FullScreen DMG-3x" ||
-		selectedscaler == "FullScreen Scan-3x")
-	{
-		SetIPUSharpness("7");
-		SetIPUAspectRatio("0");
-		if(screen->w != 480 || screen->h != 432) {
-			SetVid(480, 432, 16);
-		}
-	}
-	else
-	{
-		if(screen->w != 320 || screen->h != 240) {
+	else {
+		if(screen->w != 320 || screen->h != 240){
 			SetVid(320, 240, 16);
 		}
 	}
+	
+	// if (selectedscaler == "No Scaling" ||
+	// 	selectedscaler == "1.5x Sharp" ||
+	// 	selectedscaler == "1.5x Fast" ||
+	// 	selectedscaler == "1.5x Smooth" ||
+	// 	selectedscaler == "Aspect Fast" ||
+	// 	selectedscaler == "Aspect Smooth" ||
+	// 	selectedscaler == "FullScreen Fast" ||
+	// 	selectedscaler == "FullScreen Smooth")
+	// {
+	// 	if(screen->w != 320 || screen->h != 240) {
+	// 		SetVid(320, 240, 16);
+	// 	}
+	// }
+	// else if (selectedscaler == "1.5x IPU")
+	// {
+	// 	SetIPUSharpness("2");
+	// 	SetIPUAspectRatio("1");
+	// 	if(screen->w != 208 || screen->h != 160) {
+	// 		SetVid(208, 160, 16);
+	// 	}
+	// }
+	// else if (selectedscaler == "Aspect IPU")
+	// {
+	// 	SetIPUSharpness("2");
+	// 	SetIPUAspectRatio("1");
+	// 	if(screen->w != 192 || screen->h != 144) {
+	// 		SetVid(192, 144, 16);
+	// 	}
+	// }
+	// else if (selectedscaler == "FullScreen IPU")
+	// {
+	// 	SetIPUSharpness("2");
+	// 	SetIPUAspectRatio("0");
+	// 	if(screen->w != 160 || screen->h != 144) {
+	// 		SetVid(160, 144, 16);
+	// 	}
+	// }
+	// else if (selectedscaler == "1.5x IPU-2x" ||
+	// 	selectedscaler == "1.5x DMG-2x" ||
+	// 	selectedscaler == "1.5x Scan-2x")
+	// {
+	// 	SetIPUSharpness("2");
+	// 	SetIPUAspectRatio("1");
+	// 	if(screen->w != 428 || screen->h != 320){
+	// 		SetVid(428, 320, 16);
+	// 	}
+	// }
+	// else if (selectedscaler == "Aspect IPU-2x" ||
+	// 	selectedscaler == "Aspect DMG-2x" ||
+	// 	selectedscaler == "Aspect Scan-2x")
+	// {
+	// 	SetIPUSharpness("2");
+	// 	SetIPUAspectRatio("1");
+	// 	if(screen->w != 384 || screen->h != 288){
+	// 		SetVid(384, 288, 16);
+	// 	}
+	// }
+	// else if (selectedscaler == "FullScreen IPU-2x" ||
+	// 	selectedscaler == "FullScreen DMG-2x" ||
+	// 	selectedscaler == "FullScreen Scan-2x")
+	// {
+	// 	SetIPUSharpness("2");
+	// 	SetIPUAspectRatio("0");
+	// 	if(screen->w != 320 || screen->h != 288) {
+	// 		SetVid(320, 288, 16);
+	// 	}
+	// }
+	// else if (selectedscaler == "1.5x DMG-3x" ||
+	// 	selectedscaler == "1.5x Scan-3x")
+	// {
+	// 	if(screen->w != 640 || screen->h != 480){
+	// 		SetVid(640, 480, 16);
+	// 	}
+	// }
+	// else if (selectedscaler == "Aspect DMG-3x" ||
+	// 	selectedscaler == "Aspect Scan-3x")
+	// {
+	// 	SetIPUSharpness("7");
+	// 	SetIPUAspectRatio("1");
+	// 	if(screen->w != 576 || screen->h != 432){
+	// 		SetVid(576, 432, 16);
+	// 	}
+	// }
+	// else if (selectedscaler == "FullScreen DMG-3x" ||
+	// 	selectedscaler == "FullScreen Scan-3x")
+	// {
+	// 	SetIPUSharpness("7");
+	// 	SetIPUAspectRatio("0");
+	// 	if(screen->w != 480 || screen->h != 432) {
+	// 		SetVid(480, 432, 16);
+	// 	}
+	// }
+	// else
+	// {
+	// 	if(screen->w != 320 || screen->h != 240) {
+	// 		SetVid(320, 240, 16);
+	// 	}
+	// }
 #else
-	SetVid(240, 160, 16);
+	if(screen->w != 240 || screen->h != 160){
+		SetVid(240, 160, 16);
+	}
 #endif
 }
 
 void SdlBlitter::force320x240() {
-#ifndef VERSION_RS90
-	printf("forcing 320x240...\n");
-	SetVid(320, 240, 16);
-#else
-	printf("forcing 240x160...\n");
-	SetVid(240, 160, 16);
-#endif
+// #ifndef VERSION_RS90
+// 	printf("forcing 320x240...\n");
+// 	SetVid(320, 240, 16);
+// #else
+// 	printf("forcing 240x160...\n");
+// 	SetVid(240, 160, 16);
+// #endif
 }
 
 SdlBlitter::PixelBuffer SdlBlitter::inBuffer() const {
@@ -522,16 +552,30 @@ void anim_textoverlay(SDL_Surface *surface) {
 }
 
 void SdlBlitter::applyScalerToSurface(SDL_Surface *sourcesurface) {
+	selectedscaler = use_2x ? (gameiscgb==0 ? dmgscaler : cgbscaler) : anyscaler; // MINUI
+	
 #ifndef VERSION_RS90
 	size_t offset;
-	if (selectedscaler == "No Scaling")
+	if (selectedscaler == "No Scaling" || 
+		selectedscaler == "1x")
 	{
-		SDL_Rect dst;
-		dst.x = (screen->w - sourcesurface->w) / 2;
-		dst.y = (screen->h - sourcesurface->h) / 2;
-		dst.w = sourcesurface->w;
-		dst.h = sourcesurface->h;
-		SDL_BlitSurface(sourcesurface, NULL, screen, &dst);
+		if (use_2x) {
+			offset = (2 * (640 - 320) / 2) + ((480 - 288) / 2) * screen->pitch;
+			scale2x((uint32_t*)((uint8_t *)screen->pixels + offset), (uint32_t*)sourcesurface->pixels);
+		}
+		else {
+			SDL_Rect dst;
+			dst.x = (screen->w - sourcesurface->w) / 2;
+			dst.y = (screen->h - sourcesurface->h) / 2;
+			dst.w = sourcesurface->w;
+			dst.h = sourcesurface->h;
+			SDL_BlitSurface(sourcesurface, NULL, screen, &dst);			
+		}
+	}
+	else if (selectedscaler == "1.5x Sharp")
+	{
+		offset = 0; // this filter centers itself
+		scale15x_sharp((uint16_t*)((uint8_t *)screen->pixels + offset), (uint16_t*)sourcesurface->pixels);
 	}
 	else if (selectedscaler == "1.5x Fast")
 	{
@@ -543,12 +587,12 @@ void SdlBlitter::applyScalerToSurface(SDL_Surface *sourcesurface) {
 		offset = (2 * (320 - 240) / 2) + ((240 - 216) / 2) * screen->pitch;
 		scale15x_pseudobilinear((uint32_t*)((uint8_t *)screen->pixels + offset), (uint32_t*)sourcesurface->pixels);
 	}
-	else if (selectedscaler == "Aspect 1.66x Fast")
+	else if (selectedscaler == "Aspect Fast")
 	{
 		offset = (2 * (320 - 266) / 2) + ((240 - 240) / 2) * screen->pitch;
 		scale166x_fast((uint32_t*)((uint8_t *)screen->pixels + offset), (uint32_t*)sourcesurface->pixels);
 	}
-	else if (selectedscaler == "Aspect 1.66x Smooth")
+	else if (selectedscaler == "Aspect Smooth")
 	{
 		offset = (2 * (320 - 266) / 2) + ((240 - 240) / 2) * screen->pitch;
 		scale166x_pseudobilinear((uint32_t*)((uint8_t *)screen->pixels + offset), (uint32_t*)sourcesurface->pixels);
@@ -608,6 +652,28 @@ void SdlBlitter::applyScalerToSurface(SDL_Surface *sourcesurface) {
 			scale15x_dotmatrix3((uint32_t*)((uint8_t *)screen->pixels + offset), (uint32_t*)sourcesurface->pixels, menupalwhite);
 		}
 	}
+	
+	else if (selectedscaler == "2x")
+	{
+		offset = (2 * (640 - 320) / 2) + ((480 - 288) / 2) * screen->pitch;
+		scale2x((uint32_t*)((uint8_t *)screen->pixels + offset), (uint32_t*)sourcesurface->pixels);
+	}
+	else if (selectedscaler == "3x")
+	{
+		offset = (2 * (640 - 480) / 2) + ((480 - 432) / 2) * screen->pitch;
+		scale3x((uint32_t*)((uint8_t *)screen->pixels + offset), (uint32_t*)sourcesurface->pixels);
+	}
+	else if (selectedscaler == "3x DMG")
+	{
+		offset = (2 * (640 - 480) / 2) + ((480 - 432) / 2) * screen->pitch;
+		scale3x_dmg((uint32_t*)((uint8_t *)screen->pixels + offset), (uint32_t*)sourcesurface->pixels, gameiscgb?menupalblack:menupalwhite);
+	}
+	else if (selectedscaler == "3x LCD")
+	{
+		offset = (2 * (640 - 480) / 2) + ((480 - 432) / 2) * screen->pitch;
+		scale3x_lcd((uint32_t*)((uint8_t *)screen->pixels + offset), (uint32_t*)sourcesurface->pixels);
+	}
+	
 	else if (selectedscaler == "1.5x Scan-3x")
 	{
 		offset = (2 * (640 - 480) / 2) + ((480 - 432) / 2) * screen->pitch;

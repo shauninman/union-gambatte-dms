@@ -122,7 +122,7 @@ extern SDL_Surface *textoverlaycolored;
 extern int showfps, ghosting, biosenabled, colorfilter, gameiscgb, buttonlayout, stereosound, prefercgb, ffwhotkey, stateautoload, stateautosave;
 extern uint32_t menupalblack, menupaldark, menupallight, menupalwhite;
 extern int filtervalue[12];
-extern std::string selectedscaler, dmgbordername, gbcbordername, palname, filtername, currgamename, homedir, ipuscaling;
+extern std::string selectedscaler, anyscaler, dmgscaler, cgbscaler, dmgbordername, gbcbordername, palname, filtername, currgamename, homedir, ipuscaling;
 extern int numcodes_gg, numcodes_gs, selectedcode, editmode;
 extern int ggcheats[NUM_GG_CODES*9];
 extern int gscheats[NUM_GS_CODES*8];

@@ -45,6 +45,14 @@
 #include <sys/stat.h>
 #include "../menu.h"
 
+#include <dlfcn.h>
+extern "C"
+{
+	#include <mmenu.h>
+}
+static void* mmenu = NULL;
+static int resume_slot = -1;
+
 bool get_bootloader_from_file(void* userdata, bool isgbc, uint8_t* data, uint32_t buf_size)
 {
 	if(biosenabled == 0){
@@ -52,8 +60,8 @@ bool get_bootloader_from_file(void* userdata, bool isgbc, uint8_t* data, uint32_
 	}
 
 	//get path
-	std::string path;
-	path += homedir + "/.gambatte/bios/";
+	std::string path = getenv("SDCARD_PATH");
+	path += "/Bios/GB/";
 
 	unsigned int size;
 	if(isgbc){
@@ -660,7 +668,11 @@ static void printControls() {
 	std::puts("Select:\trshift");
 }
 
+static char rom_path[256];
+static char save_path[256];
+
 #ifdef ROM_BROWSER
+// NOTE: MinUI will never have a rom browser so this can be ignored
 int GambatteSdl::exec(int const argc, char const *const argv[]) {
 	std::puts("Gambatte SDL"
 #ifdef GAMBATTE_SDL_VERSION_STR
@@ -770,9 +782,11 @@ int GambatteSdl::exec(int const argc, char const *const argv[]) {
 			}
 		}
 	}
-
-	std::string savedir = (homedir + "/.gambatte/saves/");
+	
+	std::string savedir = getenv("SDCARD_PATH");
+	savedir += "/Saves/GB/";
 	gambatte.setSaveDir(savedir);
+	gambatte.setStateDir(homedir + "/.gambatte/saves/");
 
 	SdlIniter sdlIniter;
 	if (sdlIniter.isFailed())
@@ -845,6 +859,9 @@ int GambatteSdl::exec(int const argc, char const *const argv[]) {
 
 	basicdirpath = (homedir + "/.gambatte/saves/");
 	mkdir(basicdirpath.c_str(), 0777);
+	
+	basicdirpath = (homedir + "/.gambatte/states/");
+	mkdir(basicdirpath.c_str(), 0777);
 
 	basicdirpath = (homedir + "/.gambatte/bios/");
 	mkdir(basicdirpath.c_str(), 0777);
@@ -916,7 +933,14 @@ int GambatteSdl::exec(int const argc, char const *const argv[]) {
 
 	std::string romflnm(argv[loadIndex]);
 	currgamename = strip_Dir(strip_Extension(romflnm));
-
+	strcpy(rom_path, romflnm.c_str());	
+	mmenu = dlopen("libmmenu.so", RTLD_LAZY);
+	
+	if (mmenu) {
+		ResumeSlot_t ResumeSlot = (ResumeSlot_t)dlsym(mmenu, "ResumeSlot");
+		if (ResumeSlot) resume_slot = ResumeSlot();
+	}
+	
 	loadConfig(); // load config.cfg file on startup
 
 	for (std::size_t i = 0; i < inputOption.numMappings(); ++i) {
@@ -943,8 +967,10 @@ int GambatteSdl::exec(int const argc, char const *const argv[]) {
 		}
 	}
 
-	std::string savedir = (homedir + "/.gambatte/saves/");
+	std::string savedir = getenv("SDCARD_PATH");
+	savedir += "/Saves/GB/";
 	gambatte.setSaveDir(savedir);
+	gambatte.setStateDir(homedir + "/.gambatte/states/");
 
 	//gb/gbc bootloader support
 	gambatte.setBootloaderGetter(get_bootloader_from_file);
@@ -967,7 +993,9 @@ int GambatteSdl::exec(int const argc, char const *const argv[]) {
 		std::printf("header checksum: %s\n", pak.headerChecksumOk() ? "ok" : "bad");
 		std::printf("cgb: %d\n", gambatte.isCgb());
 	}
-
+	
+	strcpy(save_path, gambatte.getSaveStatePathTemplate().c_str());
+	
 	SdlIniter sdlIniter;
 	if (sdlIniter.isFailed())
 		return EXIT_FAILURE;
@@ -986,6 +1014,12 @@ int GambatteSdl::exec(int const argc, char const *const argv[]) {
 
 	init_globals(&gambatte, &blitter); //init global pointers
 
+	if(gambatte.isCgb()){
+		gameiscgb = 1;
+	} else {
+		gameiscgb = 0;
+	}
+
 	blitter.CheckIPU();
 	blitter.setBufferDimensions(); //set appropiate resolution on startup
 
@@ -996,11 +1030,9 @@ int GambatteSdl::exec(int const argc, char const *const argv[]) {
 	init_menu(); //load menu font on startup
 	init_menusurfaces(); //init menu surfaces on startup
 
-	if(gambatte.isCgb()){
-		gameiscgb = 1;
+	if(gameiscgb == 1){
 		loadFilter(filtername); //load filter on startup
 	} else {
-		gameiscgb = 0;
 		loadPalette(palname); //load palette on startup
 	}
 
@@ -1083,21 +1115,51 @@ bool GambatteSdl::handleEvents(BlitterWrapper &blitter) {
 
 				break;
 			case SDL_KEYDOWN:
-				if (e.key.keysym.mod & KMOD_CTRL) {
+				// if (e.key.keysym.mod & KMOD_CTRL) {
+				// 	switch (e.key.keysym.sym) {
+				// 	case SDLK_f: blitter.toggleFullScreen(); break;
+				// 	case SDLK_r: gambatte.reset(); break;
+				// 	default: break;
+				// 	}
+				// } else {
 					switch (e.key.keysym.sym) {
-					case SDLK_f: blitter.toggleFullScreen(); break;
-					case SDLK_r: gambatte.reset(); break;
-					default: break;
-					}
-				} else {
-					switch (e.key.keysym.sym) {
-					case SDLK_RCTRL: // R button in bittboy / Reset button in PocketGo / Menu button in PlayGO
-					case SDLK_BACKSPACE: // R trigger
+// 					case SDLK_RCTRL: // R button in bittboy / Reset button in PocketGo / Menu button in PlayGO
+// 					case SDLK_BACKSPACE: // R trigger
 					case SDLK_HOME: // Power button in Opendingux devices
-					case SDLK_END: // Power/Suspend button in RetroFW devices
+					case SDLK_KP_DIVIDE: // L3 in OpenDingux
+// 					case SDLK_END: // Power/Suspend button in RetroFW devices
 						if((menuout == -1) && (menuin == -1)){
 							ffwdtoggle = 0;
-							main_menu_with_anim();
+							
+							SDL_Surface* screen = blitter.blitter_.screen;
+							if (mmenu) {
+								ShowMenu_t ShowMenu = (ShowMenu_t)dlsym(mmenu, "ShowMenu");
+								
+								MenuReturnStatus status = ShowMenu(rom_path, save_path);
+							
+								if (status==kStatusExitGame) {
+								    gambatte.saveSavedata();
+									SDL_FillRect(screen, NULL, 0);
+									SDL_Flip(screen);
+								    return true;
+								}
+								else if (status==kStatusOpenMenu) {
+									main_menu();
+								}
+								else if (status>=kStatusLoadSlot) {
+									int slot = status - kStatusLoadSlot;
+									gambatte.selectState_NoOsd(slot);
+									gambatte.loadState_NoOsd();
+								}
+								else if (status>=kStatusSaveSlot) {
+									int slot = status - kStatusSaveSlot;
+									gambatte.selectState_NoOsd(slot);
+									gambatte.saveState_NoOsd(blitter.inBuf().pixels, blitter.inBuf().pitch);
+								}
+							}
+							else {
+								main_menu();
+							}
 							inputGetter.is = 0;
 						}
 						break;
@@ -1133,7 +1195,7 @@ bool GambatteSdl::handleEvents(BlitterWrapper &blitter) {
 					*/
 					default: break;
 					}
-				}
+				// }
 				// fallthrough
 			case SDL_KEYUP:
 				for (std::pair<keymap_t::iterator, keymap_t::iterator> range =
@@ -1158,7 +1220,7 @@ static std::size_t const gambatte_max_overproduction = 2064;
 
 static bool isFastForward(Uint8 const *keys) {
 	if (ffwhotkey == 1) {
-		return keys[SDLK_TAB];
+		return keys[SDLK_TAB]; // L/L1 button
 	} else if (ffwhotkey == 2) {
 		if (ffwdtoggle == 0){
 			return false;
@@ -1244,6 +1306,10 @@ int GambatteSdl::run(long const sampleRate, int const latency, int const periods
 } // anon namespace
 
 int main(int argc, char **argv) {
+	std::string screen_height = getenv("SCREEN_HEIGHT");
+	use_2x = (screen_height=="480"); // YIKES
+	std::printf("2x: %s (%s)\n", use_2x?"true":"false", screen_height.c_str());
+	
 	GambatteSdl gambatteSdl;
 	return gambatteSdl.exec(argc, argv);
 }

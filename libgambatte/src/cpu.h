@@ -44,9 +44,17 @@ public:
 	void setSaveDir(std::string const &sdir) {
 		mem_.setSaveDir(sdir);
 	}
+	 // MINUI
+	void setStateDir(std::string const &sdir) {
+		mem_.setStateDir(sdir);
+	}
 
 	std::string const saveBasePath() const {
 		return mem_.saveBasePath();
+	}
+	 // MINUI
+	std::string const stateBasePath() const {
+		return mem_.stateBasePath();
 	}
 
 	void setOsdElement(transfer_ptr<OsdElement> osdElement) {
