@@ -1305,6 +1305,7 @@ int GambatteSdl::run(long const sampleRate, int const latency, int const periods
 
 } // anon namespace
 
+bool use_2x;
 int main(int argc, char **argv) {
 	std::string screen_height = getenv("SCREEN_HEIGHT");
 	use_2x = (screen_height=="480"); // YIKES

@@ -37,6 +37,11 @@ static std::string const statePath(std::string const &basePath, int stateNo) {
 	return basePath + "_" + itos(stateNo) + ".gqs";
 }
 
+static std::string const statePathTemplate(std::string const &basePath) {
+	return basePath + "_%i.gqs";
+}
+
+
 namespace gambatte {
 
 struct GB::Priv {
