@@ -5,3 +5,4 @@ build/*
 gambatte-dms
 gambatte_sdl/builddate.h
 .sconsign.dblite
+config.log
