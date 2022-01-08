@@ -147,8 +147,9 @@ void SdlBlitter::SetVid(int w, int h, int bpp){
 	screen = SDL_SetVideoMode(w, h, bpp, SDL_SWSURFACE);
 #elif defined VERSION_MIYOOMINI
 	if (video) SDL_FreeSurface(screen);
-	video = SDL_SetVideoMode(w, h, 32, SDL_HWSURFACE | SDL_DOUBLEBUF);
-	screen = SDL_CreateRGBSurface(SDL_HWSURFACE, w, h, 16, 0xF800, 0x7E0, 0x1F, 0); // wait, doesn't the scaler convert to 32bpp? is this not giving us what we asked for?
+	// #define SDL_TRIPLEBUF	0x40000100
+	video = SDL_SetVideoMode(w, h, 32, SDL_HWSURFACE); //  | SDL_DOUBLEBUF
+	screen = SDL_CreateRGBSurface(SDL_HWSURFACE, w, h, 32, 0, 0, 0, 0);
 #else
 	screen = SDL_SetVideoMode(w, h, bpp, SDL_HWSURFACE | SDL_DOUBLEBUF);
 #endif
