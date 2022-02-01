@@ -1143,7 +1143,7 @@ bool GambatteSdl::handleEvents(BlitterWrapper &blitter) {
 					case SDLK_KP_DIVIDE: // L3 in OpenDingux
 #elif defined VERSION_MIYOOMINI
 					case SDLK_ESCAPE: // MENU on Miyoo Mini
-					case SDLK_UNKNOWN: // POWER on Miyoo Mini
+					case SDLK_POWER: // POWER on Miyoo Mini
 #endif
 // 					case SDLK_END: // Power/Suspend button in RetroFW devices
 						if((menuout == -1) && (menuin == -1)){
