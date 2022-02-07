@@ -63,7 +63,7 @@ int showfps = 0, ghosting = 0, biosenabled = 0, colorfilter = 0, gameiscgb = 0, 
 #endif
 uint32_t menupalblack = 0x000000, menupaldark = 0x505450, menupallight = 0xA8A8A8, menupalwhite = 0xF8FCF8;
 int filtervalue[12] = {135, 20, 0, 25, 0, 125, 20, 25, 0, 20, 105, 30};
-std::string selectedscaler="1.5x Sharp", anyscaler="1.5x Sharp", dmgscaler="3x", cgbscaler="3x", dmgbordername = "NONE", gbcbordername = "NONE", palname = "NONE", filtername = "DEFAULT", currgamename = "default";
+std::string selectedscaler="1.5x Sharp", anyscaler="1.5x Sharp", dmgscaler="3x DMG", cgbscaler="3x LCD", dmgbordername = "NONE", gbcbordername = "NONE", palname = "NONE", filtername = "NONE", currgamename = "default";
 std::string homedir = getenv("HOME");
 std::string ipuscaling = "NONE";
 int numcodes_gg = NUM_GG_CODES, numcodes_gs = NUM_GS_CODES, selectedcode = 0, editmode = 0, blink = 0, footer_alt = 0;
