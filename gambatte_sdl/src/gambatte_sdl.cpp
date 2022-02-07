@@ -1153,7 +1153,7 @@ bool GambatteSdl::handleEvents(BlitterWrapper &blitter) {
 							if (mmenu) {
 								ShowMenu_t ShowMenu = (ShowMenu_t)dlsym(mmenu, "ShowMenu");
 								
-								MenuReturnStatus status = ShowMenu(rom_path, save_path);
+								MenuReturnStatus status = ShowMenu(rom_path, save_path, NULL);
 							
 								if (status==kStatusExitGame) {
 								    gambatte.saveSavedata();
